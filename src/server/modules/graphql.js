@@ -15,7 +15,7 @@ const schema = buildSchema(`
   }
 
   type Mutation {
-    setMessage(id:String!, body:String!): Message!
+    updateMessage(id:String!, body:String!): Message!
     insertMessage(body:String!): Message!
     deleteMessage(id: String!): Message!
   }
@@ -54,7 +54,7 @@ const root = {
   insertMessage: async ({ body }) => {
     return await insertMessage({ body });
   },
-  setMessage: async ({ id, body }) => {
+  updateMessage: async ({ id, body }) => {
     return await updateMessage(id, { body });
   },
   deleteMessage: async ({ id }) => {

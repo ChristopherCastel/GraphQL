@@ -7,8 +7,11 @@ class MessageContainer extends React.Component {
     super(props);
     this.state = {
       id: props.match.params.id,
-      message: null
+      message: { body: "" }
     };
+
+    this.onFieldChange = this.onFieldChange.bind(this);
+    this.updateMessage = this.updateMessage.bind(this);
   }
 
   fetchMessage() {
@@ -32,20 +35,58 @@ class MessageContainer extends React.Component {
           message: resp.data.message
         });
       })
-      .catch(error => {
-        console.error(error);
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
+  onFieldChange(event) {
+    this.setState({
+      [event.target.name]: { body: event.target.value }
+    });
+  }
+
+  updateMessage(e) {
+    e.preventDefault();
+
+    const query = `mutation UpdateMessage($id: String!, $body: String!) {
+      updateMessage(id: $id, body: $body) {
+        _id
+        body
+      }
+    }`;
+    const variables = {
+      id: this.state.id,
+      body: this.state.message.body
+    };
+
+    sendApiRequest({
+      url: "/graphql",
+      method: "POST",
+      params: { query, variables }
+    })
+      .then(resp => {
         this.setState({
-          message: []
+          message: resp.data.updateMessage
         });
+      })
+      .catch(err => {
+        console.log(err);
       });
   }
 
   componentDidMount() {
-    setTimeout(this.fetchMessage.bind(this), 2000);
+    this.fetchMessage();
   }
 
   render() {
-    return <MessageComponent message={this.state.message} />;
+    return (
+      <MessageComponent
+        message={this.state.message}
+        onFieldChange={this.onFieldChange}
+        updateMessage={this.updateMessage}
+      />
+    );
   }
 }
 

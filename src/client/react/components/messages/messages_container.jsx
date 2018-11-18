@@ -5,8 +5,10 @@ import sendApiRequest from "react/utils/api";
 class MessagesContainer extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { messages: [] };
+    this.state = { messages: [], message: "" };
     this.deleteMessage = this.deleteMessage.bind(this);
+    this.saveNewMessage = this.saveNewMessage.bind(this);
+    this.onFieldChange = this.onFieldChange.bind(this);
   }
 
   fetchMessages() {
@@ -63,6 +65,39 @@ class MessagesContainer extends React.Component {
       });
   }
 
+  saveNewMessage(e) {
+    e.preventDefault();
+    const query = `mutation InsertMessage($body: String!) {
+      insertMessage(body: $body) {
+        _id
+        body
+      }
+    }`;
+    const variables = {
+      body: this.state.message
+    };
+
+    sendApiRequest({
+      url: "/graphql",
+      method: "POST",
+      params: { query, variables }
+    })
+      .then(resp => {
+        const { messages } = this.state;
+        messages.push(resp.data.insertMessage);
+        this.setState({ messages: messages });
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
+  onFieldChange(event) {
+    this.setState({
+      [event.target.name]: event.target.value
+    });
+  }
+
   componentDidMount() {
     this.fetchMessages();
   }
@@ -72,6 +107,9 @@ class MessagesContainer extends React.Component {
       <MessagesComponent
         messages={this.state.messages}
         deleteMessage={this.deleteMessage}
+        message={this.state.message}
+        saveNewMessage={this.saveNewMessage}
+        onFieldChange={this.onFieldChange}
       />
     );
   }

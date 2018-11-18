@@ -16,15 +16,14 @@ let findMessageById = async function(id) {
 };
 
 let updateMessage = async function(id, body) {
-  return prepare(
-    await db.db
-      .collection("messages")
-      .findOneAndUpdate(
-        { _id: new db.ObjectID(id) },
-        { $set: body },
-        { returnOriginal: false }
-      )
-  );
+  const result = await db.db
+    .collection("messages")
+    .findOneAndUpdate(
+      { _id: new db.ObjectID(id) },
+      { $set: body },
+      { returnOriginal: false }
+    );
+  return prepare(result.value);
 };
 
 let insertMessage = async function(body) {
