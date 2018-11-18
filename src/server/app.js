@@ -1,7 +1,6 @@
 const createError = require("http-errors");
 const express = require("express");
 const path = require("path");
-const fs = require("fs");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const sassMiddleware = require("node-sass-middleware");
@@ -9,6 +8,9 @@ const sassMiddleware = require("node-sass-middleware");
 const assetPath = require("./asset_path.js");
 
 const db = require("./modules/db.js");
+
+const graphqlHTTP = require("express-graphql");
+const { schema, root } = require("./modules/graphql");
 
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
@@ -38,62 +40,6 @@ db.connect().then(db => {
     }
   });
 });
-
-const graphqlHTTP = require("express-graphql");
-const { buildSchema } = require("graphql");
-
-const {
-  allMessages,
-  updateMessage,
-  insertMessage
-} = require("./resources/messages");
-
-const schema = buildSchema(`
-  type Query {
-    messages: [Message]
-  }
-
-  type Mutation {
-    setMessage(id:String!, body:String!): Message!
-    insertMessage(body:String!): Message
-  }
-  
-  type Message {
-    _id: String!
-    body: String!
-    submessages: [Submessage]
-  }
-
-  type Submessage {
-    time: String
-    description: String
-    title: String
-  }
-
-  type User {
-    login: String,
-    password: String,
-    firstName: String,
-    lastName: String
-  }
-
-  input MessageInput {
-    body: String
-  }
-`);
-
-const root = {
-  messages: async () => {
-    console.log(await allMessages());
-    return await allMessages();
-  },
-  insertMessage: async ({ body }) => {
-    return await insertMessage({ body });
-  },
-  setMessage: async ({ id, body }) => {
-    return await updateMessage(id, { body });
-  }
-};
 
 app.use(
   "/graphql",
