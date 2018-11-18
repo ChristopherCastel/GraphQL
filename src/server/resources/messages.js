@@ -1,11 +1,12 @@
-const db = require("../modules/db.js");
-const { prepare } = require("../modules/utils.js");
+const db = require("../modules/db");
+const { prepare } = require("../modules/utils");
 
 let allMessages = async function() {
-  return (await db.db
+  const messages = await db.db
     .collection("messages")
     .find()
-    .toArray()).map(prepare);
+    .toArray();
+  return messages.map(prepare);
 };
 
 let findMessageById = async function(id) {
@@ -27,16 +28,15 @@ let updateMessage = async function(id, body) {
 };
 
 let insertMessage = async function(body) {
-  let message = await db.db.collection("messages").insertOne(body);
+  const message = await db.db.collection("messages").insertOne(body);
   return prepare(message.ops[0]);
 };
 
 let deleteMessage = async function(id) {
-  return prepare(
-    await db.db
-      .collection("messages")
-      .findOneAndDelete({ _id: new db.ObjectID(id) })
-  );
+  const result = await db.db
+    .collection("messages")
+    .findOneAndDelete({ _id: new db.ObjectID(id) });
+  return prepare(result.value);
 };
 
 exports.allMessages = allMessages;

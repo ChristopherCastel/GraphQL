@@ -6,7 +6,6 @@ class MessagesContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = { messages: [] };
-
     this.deleteMessage = this.deleteMessage.bind(this);
   }
 
@@ -14,7 +13,7 @@ class MessagesContainer extends React.Component {
     sendApiRequest({
       url: "/graphql",
       method: "POST",
-      params: { query: "{messages {body} }" }
+      params: { query: "{messages {_id, body} }" }
     })
       .then(resp => {
         this.setState({
@@ -30,10 +29,20 @@ class MessagesContainer extends React.Component {
   }
 
   deleteMessage(message) {
-    const url = `/api/messages/${message._id}`;
+    const query = `mutation DeleteMessage($id: String!) {
+      deleteMessage(id: $id) {
+        _id
+        body
+      }
+    }`;
+    const variables = {
+      id: message._id
+    };
+
     sendApiRequest({
-      url,
-      method: "DELETE"
+      url: "/graphql",
+      method: "POST",
+      params: { query, variables }
     })
       .then(() => {
         const { messages } = this.state;

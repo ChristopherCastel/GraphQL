@@ -7,9 +7,7 @@ import { withTheme } from "react/contexts/theme.js";
 
 const Navigation = ({ jwt, username, bg, variant, setBg, setVariant }) => {
   function switchTheme() {
-    console.log("switch theme"); // ok
     const theme = bg === "light" ? "dark" : "light";
-    console.log(theme); // ok
     setBg(theme); // ne passe pas dedans
     setVariant(theme); // non plus
   }

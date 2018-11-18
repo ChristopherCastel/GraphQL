@@ -10,9 +10,9 @@ const MessageItem = ({ message, deleteMessage }) => {
       <Col xs={8}>{message.body}</Col>
       <Col xs={4}>
         <ButtonToolbar>
-          <Button variant="outline-primary">
-            <Link to={detailsPath}>Détails</Link>
-          </Button>
+          <Link to={detailsPath}>
+            <Button variant="outline-primary">Détails </Button>
+          </Link>
 
           <Button variant="danger" onClick={() => deleteMessage(message)}>
             Delete

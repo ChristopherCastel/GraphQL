@@ -41,15 +41,6 @@ db.connect().then(db => {
   });
 });
 
-app.use(
-  "/graphql",
-  graphqlHTTP({
-    schema: schema,
-    rootValue: root,
-    graphiql: true
-  })
-);
-
 app.locals.assetPath = assetPath;
 
 app.set("views", path.join(__dirname, "views"));
@@ -69,6 +60,16 @@ app.use(
 );
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname, "../../dist")));
+
+// GraphQL entry endpoint
+app.use(
+  "/graphql",
+  graphqlHTTP({
+    schema: schema,
+    rootValue: root,
+    graphiql: true
+  })
+);
 
 // not authenticated
 app.use("/", indexRouter);

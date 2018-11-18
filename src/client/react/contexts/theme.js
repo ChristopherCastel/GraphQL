@@ -24,14 +24,12 @@ class ThemeProvider extends React.Component {
   }
 
   setBg(bg) {
-    console.log("setbg");
     this.setState({
       bg: bg
     });
   }
 
   setVariant(variant) {
-    console.log("setvariant");
     this.setState({
       variant: variant
     });

@@ -5,41 +5,47 @@ import sendApiRequest from "react/utils/api";
 class MessageContainer extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { 
+    this.state = {
       id: props.match.params.id,
-      message: null, 
+      message: null
     };
   }
 
+  fetchMessage() {
+    const query = `query FindMessageById($id: String!) {
+      message(id: $id) {
+        _id
+        body
+      }
+    }`;
+    const variables = {
+      id: this.state.id
+    };
 
-  fetchMessage(){
-    const url = `/api/messages/${this.state.id}`;
-    sendApiRequest({ url })
-      .then((message) => {
+    sendApiRequest({
+      url: "/graphql",
+      method: "POST",
+      params: { query, variables }
+    })
+      .then(resp => {
         this.setState({
-          message: message,
-        })
+          message: resp.data.message
+        });
       })
-      .catch((error) => {
+      .catch(error => {
         console.error(error);
         this.setState({
-          message: [],
-        })
-      })
+          message: []
+        });
+      });
   }
 
-
-  componentDidMount(){
-    setTimeout( this.fetchMessage.bind(this), 2000 );
+  componentDidMount() {
+    setTimeout(this.fetchMessage.bind(this), 2000);
   }
 
-  
   render() {
-    return (
-      <MessageComponent
-        message={this.state.message}
-      />
-    );
+    return <MessageComponent message={this.state.message} />;
   }
 }
 
