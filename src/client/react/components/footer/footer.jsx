@@ -5,11 +5,11 @@ import Button from "react-bootstrap/lib/Button";
 import { withAuthentication } from "react/contexts/authentication.js";
 import { withTheme } from "react/contexts/theme.js";
 
-const Navigation = ({ jwt, username, bg, variant, setBg, setVariant }) => {
+const Navigation = ({ username, bg, variant, setBg, setVariant }) => {
   function switchTheme() {
     const theme = bg === "light" ? "dark" : "light";
-    setBg(theme); // ne passe pas dedans
-    setVariant(theme); // non plus
+    setBg(theme);
+    setVariant(theme);
   }
 
   return (
