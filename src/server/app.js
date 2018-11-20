@@ -13,7 +13,6 @@ const graphqlHTTP = require("express-graphql");
 const { schema, root } = require("./modules/graphql");
 
 const indexRouter = require("./routes/index");
-const usersRouter = require("./routes/users");
 const loginRouter = require("./routes/login");
 
 const { requireLogin } = require("./modules/auth");
@@ -61,23 +60,32 @@ app.use(
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname, "../../dist")));
 
+// not authenticated
+app.use("/", indexRouter);
+app.use("/api/login", loginRouter);
+
+// authenticated
+if (process.env.NODE_ENV !== "development") {
+  app.use("/graphql", requireLogin);
+}
+
 // GraphQL entry endpoint
 app.use(
   "/graphql",
   graphqlHTTP({
     schema: schema,
     rootValue: root,
-    graphiql: true
+    graphiql: process.env.NODE_ENV === "development",
+    formatError(err) {
+      return {
+        message: err.message,
+        code: err.originalError && err.originalError.code,
+        location: err.locations,
+        path: err.path
+      };
+    }
   })
 );
-
-// not authenticated
-app.use("/", indexRouter);
-app.use("/api/login", loginRouter);
-
-// authenticated
-app.use("/api/*", requireLogin);
-app.use("/api/users", usersRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

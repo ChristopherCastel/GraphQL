@@ -35,13 +35,10 @@ const Navigation = ({ isAuthenticated, bg, variant }) => {
   } else {
     return (
       <Navbar bg={bg} variant={variant}>
-        <Navbar.Brand as={Link} to="/">
+        <Navbar.Brand as={Link} to="/login">
           Navbar
         </Navbar.Brand>
         <Nav className="mr-auto">
-          <Nav.Link as={Link} to="/">
-            Hello
-          </Nav.Link>
           <Nav.Link as={Link} to="/login">
             Login
           </Nav.Link>
